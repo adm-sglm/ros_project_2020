@@ -21,12 +21,12 @@
 - Implementation Details
 - References
 
-# Introduction
+<center><h1>Introduction</h1></center>
 
 
 For our robotics project we are expected to use ROS _a suite of linked software designed to interface and simplify robotics hardware_ on a robot platform called Turtlebot 3 to accomplish the following tasks; **to move the robot using simple velocity commands, map an environment, setup coordinate based move command and finally using the setup move the robot to through given waypoints while avoiding obstacles**
 
-# Techniques
+<center><h1>Techniques</h1></center>
 
 Ros framework contains many functionalities to simplify common tasks and it offers developers to extend and develop with the same manner. Basic unit of functionality in Ros is a **package** which contains executable processes called **nodes**. Nodes can communicate using **messages** _[a pub/sub system](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern)_ and **services** _a synchronous request/reply system_, all communication is done through using a special node called **Master Node**
 
@@ -35,7 +35,7 @@ Ros framework contains many functionalities to simplify common tasks and it offe
 ![](assets/communication.png)
 </center>
 
-# Implementation Details
+<center><h1>Implementation Details</h1></center>
 
 Before moving to each task we created our project's outlines. Our project is going to be a single package containing scripts for each task.
 
@@ -91,8 +91,31 @@ Other file with `yaml` extension contains meta information essentiel for the `Oc
 
 #### Loading the map and localizing the robot
 
+For this subtask we need `map_server` package with correct map argument, `amcl` package with simulation friendly arguments so that it works. We use the given configuration in the platform.
 
+Localization requires the map and laserscan data so in each usage we need to use a launch according to that.
 
+## Task 3
+
+We are going to use `move_base` package for this task which handles path planning and obstacle detection. Since we still need `amcl` and `map_server` packages, we built a new launch file following the guide in platform. 
+
+With `move_base` package we issue a target pose for the robot and it calculates the path while **actively** avoiding obstacles.
+
+Before we start giving move base commands we need to match the pose of the robot in simulation to physical pose of the robot (which in this case will be gazebo). Otherwise initial result would be like following.
+
+![](assets/demo1.png)
+
+We will align the position using `rviz` `2D pose estimate` tool.
+
+Once aligned we can issue `move_base` commands with `rospy` or for testing `rviz` `2D Nav Goal` command.
+
+## Task 4
+
+This task requires us to give `move_base` commands in an order to follow a waypoint. There are many options to do this we prefer to do it using hard-coding the pose's to our script file.
+
+To get the poses we use `Publish Point` button in rviz which publishes a point to topic `/clicked_point`
+
+After we get our waypoint poses we are going to use `SimpleActionClient('move_base', MoveBaseAction)` in a loop waiting each command to finish.
 
 # References
 
