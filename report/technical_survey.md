@@ -28,4 +28,74 @@ For our robotics project we are expected to use ROS _a suite of linked software 
 
 # Techniques
 
-Ros framework contains many libraries and packages to simplify common tasks 
+Ros framework contains many functionalities to simplify common tasks and it offers developers to extend and develop with the same manner. Basic unit of functionality in Ros is a **package** which contains executable processes called **nodes**. Nodes can communicate using **messages** _[a pub/sub system](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern)_ and **services** _a synchronous request/reply system_, all communication is done through using a special node called **Master Node**
+
+<center>
+
+![](assets/communication.png)
+</center>
+
+# Implementation Details
+
+Before moving to each task we created our project's outlines. Our project is going to be a single package containing scripts for each task.
+
+## Task 1
+
+This task is moving the robot with simple velocity messages to topic `cmd_vel`
+
+Message that is going to be published will be of `geometry_msgs/Twist` type.
+
+![](assets/twist_detail.png)
+
+Task can be achieved using a suitable launch of ROS system. For example various Turtlebot 3 launchers.
+
+- We need to check the existence of topic's availability using `rostopic list`
+- If the `cmd_vel` is available in the core we can launch our script to publish our `Twist` messages.
+
+## Task 2
+
+This task is mapping an environment, in this case environment will be Costa Coffee in Barcelona. What is especially important in this task is a launch of ROS system with laser or point cloud readings which measures the distance of the robot and the objects. Using this readings and combining them with the position of the robot we obtain our environment.
+
+Thanks to turtlebot packages we can use `turtlebot3_slam_gmapping` with the configuration on **theconstructsim** prepared for simulations.
+
+#### Mapping
+
+After launching our launch file we launch `rviz` to observe laser readings which is going to be saved into our map file.
+
+We launch the rviz with the following command ```rosrun rviz rviz -d `rospack find turtlebot3_slam`/rviz/turtlebot3_slam.rviz```
+
+![](assets/initial_map.png)
+
+<center>Initial map</center>
+
+Now we need to move the robot the get it close to objects and edges to map the full environment.
+
+In order to do that we can use teleoperation launcher with the following command
+
+`roslaunch turtlebot_teleop keyboard_teleop.launch`
+
+After moving the robot we should get the full map as in the example illustration
+
+![](assets/full_map.png)
+
+#### Saving the map
+
+The map we observe in **rviz** is not in a persistent stage, we can create a map file for later use by following command.
+
+`rosrun map_server map_saver -f name_of_map`
+
+This will save two files:
+
+One is a file with the `pgm` extension containing [OccupancyGrid](http://docs.ros.org/en/melodic/api/nav_msgs/html/msg/OccupancyGrid.html)
+Other file with `yaml` extension contains meta information essentiel for the `OccupancyGrid`
+
+#### Loading the map and localizing the robot
+
+
+
+
+# References
+
+- https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern
+- http://wiki.ros.org/ROS/Concepts
+- theconstructsim.com

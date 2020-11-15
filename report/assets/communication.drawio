@@ -1,0 +1,63 @@
+<mxfile host="65bd71144e" modified="2020-11-15T15:40:57.444Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.51.0 Chrome/83.0.4103.122 Electron/9.3.3 Safari/537.36" version="13.6.5" etag="B4Wo5tGbJ6FWpbEiINhy">
+    <diagram id="JogscDUA_SnAORWizHGR" name="Page-1">
+        <mxGraphModel dx="1046" dy="515" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="MASTER NODE" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+                    <mxGeometry x="330" y="215" width="130" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="Node 1" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+                    <mxGeometry x="110" y="244" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="Node 2" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+                    <mxGeometry x="600" y="244" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="" style="endArrow=classic;startArrow=classic;html=1;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="190" y="260" as="sourcePoint"/>
+                        <mxPoint x="330" y="260" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="12" value="Messages &lt;br&gt;published to&lt;br&gt;topics" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="11">
+                    <mxGeometry x="0.2364" y="-1" relative="1" as="geometry">
+                        <mxPoint x="-17" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="14" value="" style="endArrow=classic;startArrow=classic;html=1;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="460" y="260" as="sourcePoint"/>
+                        <mxPoint x="600" y="260" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="15" value="Messages &lt;br&gt;published to&lt;br&gt;topics" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="14">
+                    <mxGeometry x="0.2364" y="-1" relative="1" as="geometry">
+                        <mxPoint x="-17" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="16" value="" style="endArrow=classic;startArrow=classic;html=1;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="190" y="310" as="sourcePoint"/>
+                        <mxPoint x="330" y="310" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="17" value="Service&lt;br&gt;Requests /&amp;nbsp;&lt;br&gt;Replies" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="16">
+                    <mxGeometry x="0.2364" y="-1" relative="1" as="geometry">
+                        <mxPoint x="-17" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="18" value="" style="endArrow=classic;startArrow=classic;html=1;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="460" y="310" as="sourcePoint"/>
+                        <mxPoint x="600" y="310" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="19" value="Service&lt;br&gt;Requests /&amp;nbsp;&lt;br&gt;Replies" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="18">
+                    <mxGeometry x="0.2364" y="-1" relative="1" as="geometry">
+                        <mxPoint x="-17" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
