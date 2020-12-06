@@ -1,0 +1,5 @@
+<launch>
+    <!-- My Package launch file -->
+    <node pkg="ros_project_2020" type="move_basic.py" name="adm"  output="screen">
+    </node>
+</launch>
