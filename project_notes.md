@@ -68,3 +68,42 @@ Create a launch file which runs bringup with remote and sets the **slam_gmapping
 </launch>
 ```
 
+# Moving between waypoints
+
+```bash
+header:
+  seq: 0
+  stamp:
+    secs: 22886
+    nsecs: 834000000
+  frame_id: ''
+status:
+  goal_id:
+    stamp:
+      secs: 22866
+      nsecs: 499000000
+    id: "/move_base-1-22866.499000000"
+  status: 2
+  text: "This goal was canceled because another goal was recieved by the simple action server"
+result:
+
+---
+header:
+  seq: 1
+  stamp:
+    secs: 22909
+    nsecs: 167000000
+  frame_id: ''
+status:
+  goal_id:
+    stamp:
+      secs: 22886
+      nsecs: 586000000
+    id: "/move_base-2-22886.586000000"
+  status: 3
+  text: "Goal reached."
+result:
+
+---
+rostopic echo /move_base/result
+```

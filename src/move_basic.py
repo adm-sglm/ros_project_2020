@@ -13,6 +13,8 @@ def main():
     Available Modes
     ---------------------------
 
+    1 : Keyboard teleop
+    2 : Start Patroling
     3 : Create way points
     9 : Simple move with /cmd_vel
 
@@ -33,6 +35,9 @@ def main():
             active_thread.start()
         elif int(mode) == 2:
             active_thread = threading.Thread(target=app.start_patrolling)
+            active_thread.start()
+        elif int(mode) == 1:
+            active_thread = threading.Thread(target=app.basic_move)
             active_thread.start()
         # print(mode)
         # rate.sleep()
