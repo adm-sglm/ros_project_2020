@@ -2,21 +2,14 @@ from geometry_msgs.msg import PointStamped
 
 class App:
     rospy = None
-    msg = """
-    Available Modes
-    ---------------------------
-
-    3 : Create way points
-    9 : Simple move with /cmd_vel
-
-    CTRL-C to quit
-    """
+    points = []
     def __init__(self, interface):
         self.rospy = interface    
 
     def cb_point_clicked(self, data):
         # data.point carries the point clicked    
         print(data.point)
+        self.points.append(data.point)
         # mode_waypoint_create(waypoint_count+1)
 
     def mode_waypoint_create(self, waypoint_count = 0):
@@ -26,3 +19,6 @@ class App:
         # if cmd == "":
         #     print("you defined waypoints")
         self.rospy.spin()
+
+    def start_patrolling(self):
+        print(self.points)
