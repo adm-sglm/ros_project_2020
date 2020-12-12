@@ -8,24 +8,33 @@ class App:
     rospy = None
     points = []
     client = None
+    rate = None
     def __init__(self, interface):
         self.rospy = interface
+        self.rate = self.rospy.Rate(2)
         self.client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
         self.client.wait_for_server()
 
     def cb_point_clicked(self, data):
-        # data.point carries the point clicked    
-        print(data.point)
+        # data.point carries the point clicked
+        point_msg = """
+        Point added
+        X: {x}
+        Y: {y}
+        Z: {z}
+        """
+        print(point_msg.format(x=data.point.x,y=data.point.y,z=data.point.z))        
         self.points.append(data.point)
         # mode_waypoint_create(waypoint_count+1)
 
-    def mode_waypoint_create(self, waypoint_count = 0):
-        self.rospy.Subscriber("clicked_point", PointStamped, self.cb_point_clicked)
-        print("Select a point using Publish Point button on Rviz or press enter if you are done")
-        # cmd = input("waiting input")
-        # if cmd == "":
-        #     print("you defined waypoints")
-        self.rospy.spin()
+    def mode_waypoint_create(self, stop):
+        sub = self.rospy.Subscriber("clicked_point", PointStamped, self.cb_point_clicked)
+        print("Select a point using Publish Point button on Rviz or press enter if you are done\n")
+        while not stop():
+            self.rate.sleep()
+        sub.unregister()
+        msg = '{count} waypoint(s) saved\n'
+        print(msg.format(count=len(self.points)))
     
     def basic_move(self):
         msg = Twist()
@@ -38,6 +47,7 @@ class App:
         pub = self.rospy.Publisher("cmd_vel", Twist, queue_size=10)
         print("publish")
         pub.publish(msg)
+        self.rospy.spin()
 
     def start_patrolling(self):        
         print(self.points)
