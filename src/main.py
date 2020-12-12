@@ -28,13 +28,14 @@ def main():
         stop_highlight = False
         background_thread = None
         active_thread = None
+        background_thread = threading.Thread(target=app.publish_markers, args=(lambda : stop_highlight, ))
+        background_thread.start()
         stop_threads = False        
         if mode == "":            
             stop_threads = True
             if active_thread:
                 active_thread.join()
         elif int(mode) == 3:
-            # app.mode_waypoint_create()
             active_thread = threading.Thread(target=app.mode_waypoint_create, args=(lambda : stop_threads, ))
             active_thread.start()
         elif int(mode) == 2:
@@ -44,8 +45,7 @@ def main():
             active_thread = threading.Thread(target=app.basic_move)
             active_thread.start()        
         elif int(mode) == 0:
-            background_thread = threading.Thread(target=app.publish_markers, args=(lambda : stop_highlight, ))
-            background_thread.start()
+            print("0")
             # stop_highlight = True
 
 main()

@@ -9,6 +9,7 @@ from std_msgs.msg import Header, ColorRGBA
 class App:
     rospy = None
     points = []
+    markers = MarkerArray()
     client = None
     rate = None
     robot_pose = None
@@ -23,8 +24,38 @@ class App:
         self.amcl_sub = self.rospy.Subscriber("amcl_pose", PoseWithCovarianceStamped, self.cb_amcl_pose)
         self.marker_pub = self.rospy.Publisher('visualization_marker_array', MarkerArray, queue_size=5)        
 
-    def publish_markers(self, stop):
-        markers = MarkerArray()
+    def publish_markers(self, stop):        
+        while not stop():
+            self.marker_pub.publish(self.markers)
+            self.rate.sleep()
+
+    def cb_amcl_pose(self, data):
+        self.robot_pose = data
+        self.amcl_sub.unregister()
+    
+    def cb_point_clicked(self, data):
+        point_msg = """
+        Point added
+        X: {x}
+        Y: {y}
+        Z: {z}
+
+        Press enter if you are done
+        """
+        print(point_msg.format(x=data.point.x,y=data.point.y,z=data.point.z))        
+        self.points.append(data.point)
+
+    def mode_waypoint_create(self, stop):
+        sub = self.rospy.Subscriber("clicked_point", PointStamped, self.cb_point_clicked)
+        print("Select a point using Publish Point button on Rviz to save the waypoint\n")
+        while not stop():
+            self.rate.sleep()
+        sub.unregister()
+        msg = '{count} waypoint(s) saved\n'
+        self.create_markers()
+        print(msg.format(count=len(self.points)))
+    
+    def create_markers(self):        
         for i, wp in enumerate(self.points):
             marker = Marker(
                 id=i,
@@ -36,37 +67,7 @@ class App:
                 color=ColorRGBA(1.0, 0.0, 0.0, 1.0),
                 text=str(i+1)
                 )
-            markers.markers.append(marker)  
-        while not stop():
-            self.marker_pub.publish(markers)
-            self.rate.sleep()
-
-    def cb_amcl_pose(self, data):
-        self.robot_pose = data
-        self.amcl_sub.unregister()
-    
-    def cb_point_clicked(self, data):
-        # data.point carries the point clicked
-        point_msg = """
-        Point added
-        X: {x}
-        Y: {y}
-        Z: {z}
-
-        Press enter if you are done
-        """
-        print(point_msg.format(x=data.point.x,y=data.point.y,z=data.point.z))        
-        self.points.append(data.point)
-        # mode_waypoint_create(waypoint_count+1)
-
-    def mode_waypoint_create(self, stop):
-        sub = self.rospy.Subscriber("clicked_point", PointStamped, self.cb_point_clicked)
-        print("Select a point using Publish Point button on Rviz to save the waypoint\n")
-        while not stop():
-            self.rate.sleep()
-        sub.unregister()
-        msg = '{count} waypoint(s) saved\n'
-        print(msg.format(count=len(self.points)))
+            self.markers.markers.append(marker)  
     
     def basic_move(self):
         msg = Twist()
@@ -82,7 +83,6 @@ class App:
 
     def start_patrolling(self, stop):        
         for wp in self.points:
-            print(wp)
             goal = MoveBaseGoal()
             pose = Pose()
             pose.position = wp
@@ -91,3 +91,4 @@ class App:
             goal.target_pose.pose = pose
             self.client.send_goal(goal)
             self.client.wait_for_result()
+        print("All points visited\n")
