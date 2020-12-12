@@ -14,7 +14,7 @@ def main():
     ---------------------------
 
     1 : Keyboard teleop
-    2 : Start Patroling
+    2 : Follow way points
     3 : Create way points
     9 : Simple move with /cmd_vel
 
