@@ -21,3 +21,6 @@ From another terminal
 In order to observe the robot 
 
 `rosrun rviz rviz -d ~/catkin_ws/src/ros_project_2020/turtlebot3_slam.rviz`
+
+
+http://wiki.ros.org/simulator_gazebo/Tutorials/SpawningObjectInSimulation

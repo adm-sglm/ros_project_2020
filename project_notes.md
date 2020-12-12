@@ -107,3 +107,5 @@ result:
 ---
 rostopic echo /move_base/result
 ```
+
+`source /opt/ros/melodic/setup.bash`
