@@ -203,6 +203,8 @@ To do that we can use a simple application provided by Turtlebot3 package called
 
 `roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch`
 
+<a href="https://streamable.com/35ibhb">View the video</a>
+
 <center>
   <figure>
     <img src="./report/assets/task2_mapfull.jpg">
@@ -226,10 +228,90 @@ Our first tool is estimating the pose using Rviz, based on our visualizations we
 
 Our second tool is provided thanks to ROS which is called **AMCL** (Adaptive Monte Carlo Localization) it is using sensor data to estimate the pose of the robot. It creates arrows for the probable pose of the robot while doing that. This probable poses gets more precise when the robot moves. We can observe these behaviour by subscribing to the `/particlecloud` topic which will be published by amcl node.
 
+<center>
+  <figure>
+    <img src="./report/assets/amcl_before.png">
+    <figcaption>Before we move the robot, we see that there is less precision on the pose of robot</figcaption>
+  </figure>
+</center>
 
-Pathfinding
+<center>
+  <figure>
+    <img src="./report/assets/amcl_after.png">
+    <figcaption>After we move the robot, pose probabilities are much precise</figcaption>
+  </figure>
+</center>
 
-Show it actively working by placing an obstacle and emphasize the dynamic map and static map file OccupancyGrid.
+We created another launch file to utilise the map we saved in the previous section and also setup the amcl. This file can be found in the project directory **launch/start_localization.launch** It also contains configuration parameters of **amcl** node to work.
+
+<a href="https://streamable.com/cy3s6f">Video Link</a>
+
+### Task 3
+
+Task is: **Set up the move base system so that you can publish a goal to move_base and Turtlebot3 can reach
+that goal without colliding with obstacles.**
+
+Moving the robot by setting a goal pose is provided by a node called **move_base** which is a part of navigation stack.
+
+<center>
+  <figure>
+    <img style="background:white" src="./report/assets/overview_tf.png">
+    <figcaption>After we move the robot, pose probabilities are much precise</figcaption>
+  </figure>
+</center>
+
+It also reacts to obstacles which was present statically in the map or obstacles that pops up (could be a customer in the cafe) by recalculating the path to goal again.
+
+We configured our launch file to use **move_base** node using the configurations provided in Unit 3 of Mastering Turtlebot3 course in construct sim. We needed to change re-inclusion of a node by removing some fields.
+
+Our last launch file that combines everything in the project can be found under **launch/move_base.launch**. And parameters related to pathfinding algorithm can be found under **param** folder.
+
+After setting up **move_base** node we needed to send goals from our client node. There are two ways, one is publishing a <a href="http://docs.ros.org/en/melodic/api/geometry_msgs/html/msg/PoseStamped.html">PoseStamped</a> message to **move_base_simple/goal** topic or using the [service](#service) exposed by the node **move_base_msgs/MoveBaseActionGoal**.
+
+We chose to use service because of the suitability of services for the task to come.
+
+<a href="https://streamable.com/sfunq0">Video Link</a>
+
+## Task 4
+
+Task is: **Create a program that allows the Turtlebot3 to navigate within the environment following a set of
+waypoints. Waypoints location are presented on the next page.**
+
+We chose to implement this task using following steps:
+
+- We collect waypoints from Rviz's Publish Point tool
+- We highlight each point using Rviz text markers by the order
+- We send move base goals using a loop and a syncronous service call
+
+### Collecting the waypoints
+
+We chose to use Publish Point tool on Rviz to collect waypoints, this button published a **geometry_msgs.msg/Point** to `/clicked_point` topic but this method has a drawback because we need to send a goal pose but with this tool we will have a point. In order to find the least complex way we recorded the starting pose of the robot and kept it for the waypoint move goals.
+
+### Highlighting the waypoints
+
+For each waypoint created we also create a <a href="http://wiki.ros.org/rviz/DisplayTypes/Marker">Text type of marker</a>
+this markers are published to **visualization_marker_array** topic and handled by the Rviz Display **MarkerArray**.
+
+<center>
+  <figure>
+    <img src="./report/assets/waypoints.png">
+    <figcaption>Waypoints are numbered in the order they created</figcaption>
+  </figure>
+</center>
+
+### Moving between waypoints
+
+Goals are created using some parameters from the initial **amcl_pose** topic like **frame_id**, and **orientation** and the point is given by the saved points.
+
+We did blocking service calls in a loop until all waypoints are reached.
+
+## Application Flow
+
+Application has an entry file called `main.py` this script is responsible from listening the keyboard input from user and calling the required function in a thread. Enter button stops the active threads.
+
+All the functionality related methods are in `App` class. It is instantiated once in `main.py` and the rest of the thread are created from its methods so this way we keep the information from different modes of the application.
+
+<a href="https://streamable.com/24ecqc">Final Video</a>
 
 
 ## Launching the project
@@ -255,8 +337,6 @@ In order to observe the robot
 `rosrun rviz rviz -d ~/catkin_ws/src/ros_project_2020/turtlebot3_slam.rviz`
 
 
-http://wiki.ros.org/simulator_gazebo/Tutorials/SpawningObjectInSimulation
-
 ## References
 
 - http://wiki.ros.org/ROS/Introduction
@@ -269,3 +349,6 @@ http://wiki.ros.org/simulator_gazebo/Tutorials/SpawningObjectInSimulation
 - https://www.theconstructsim.com/robotigniteacademy_learnros/ros-courses-library/mastering-with-ros-turtlebot3/
 - Mastering ROS for Robotics Programming book
 - http://docs.ros.org/en/melodic/api/nav_msgs/html/msg/OccupancyGrid.html
+- http://docs.ros.org/en/melodic/api/geometry_msgs/html/msg/PoseStamped.html
+- http://wiki.ros.org/rviz/DisplayTypes/Marker
+- http://wiki.ros.org/simulator_gazebo/Tutorials/SpawningObjectInSimulation
