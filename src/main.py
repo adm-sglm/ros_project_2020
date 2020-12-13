@@ -46,6 +46,5 @@ def main():
             active_thread.start()
         elif int(mode) == 0:
             print("0")
-            # stop_highlight = True
 
 main()
