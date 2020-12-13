@@ -112,6 +112,8 @@ In this chapter we will explain what we used for each principle resource that we
 
 As for environment; we are implementing our project using construct sim a web platform which embeds a code editor, gazebo simulation, graphical user interface (for accessing any extra graphic application) powered by a pre-configured ROS distribution behind. For each of its unit there are different packages installed and different configurations applied. For the unit that we are realising our project. It gives us a pre-installed ROS Kinetic distribution along with Turtlebot3 packages.
 
+For observing the map and changes we are using Rviz a visualization tool for ROS.
+
 **Initially** it start `roscore` and `gazebo` for us so when we look at the `rostopic list` output we observe that essential topics are there.
 
 ```bash
@@ -172,22 +174,58 @@ With this methods our abilities to control the robot is very limited.
 Task is: **Create the mapping launches, and map the whole environment. You have to finish with a clean map of
 the full cafeteria. Setup the launch to be able to localize the Turtlebot3 robot.**
 
-We set us a base by creating a launch file named `start_mapping.launch` in our project's launch folder.
+We set us a base by creating a launch file named `start_mapping.launch` in our project's launch folder. It contains the configuration we took from **"Mastering Turtlebot3 Unit3"**
 
-This launch file starts the node **turtlebot3_slam_gmapping** provided within Turtlebot3 packages also sets some configuration for this node to work properly. Loads the robot model using urdf models
+This launch file starts the node **turtlebot3_slam_gmapping** provided within Turtlebot3 packages also sets some configuration for this node to work properly also loads the robot model using urdf models.
+
+Gmapping package is an implementation of a SLAM method which builds an **OccupancyGrid** from **Odometry Data** and **LaserScan**. Also gmapping node publishes to many topics for simulation and made them available for our usage, to be able to observe them we added necessary **displays** to **Rviz** and saved that config within our project folder with the name **project_def.rviz**
+
+#### **Mapping**
+
+Map is the backbone of navigation stack, it topic contains  crucial data for localization, pathfinding. It publishes <a href="http://docs.ros.org/en/melodic/api/nav_msgs/html/msg/OccupancyGrid.html">nav_msgs/OccupancyGrid</a> type of messages.
+
+OccupancyGrid data contains probabilities. Quote from ROS wiki for data of OccupancyGrid
+> The map data, in row-major order, starting with (0,0).  Occupancy probabilities are in the range [0,100].  Unknown is -1.
+
+When we start the simulation first time our **OccupancyGrid** data will be filled with Unknowns(-1) because we didn't yet feed enough data from **LaserScan**. As laserscan has its maximum range (contained in the `maxUrange` in launch file) we will only have the probabilities within range.
 
 
+<center>
+  <figure>
+    <img src="./report/assets/task2_empty.png">
+    <figcaption>Sometimes a picture worths a thousand words</figcaption>
+  </figure>
+</center>
 
+We can observe the laser distance readings by red in the picture. So in order to fill probabilities of the map all that is rest to do is move our robot until we cover the whole area.
 
-in Implementation
+To do that we can use a simple application provided by Turtlebot3 package called teleop which permits us to move the robot using keyboard buttons.
 
-Launch file / Initializing master
+`roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch`
 
-basically a master is initialized by launching `roscore` but here we dont directly run it but let it run by a launch file provided by turtlebot3 package which also sets up some parameters
+<center>
+  <figure>
+    <img src="./report/assets/task2_mapfull.jpg">
+    <figcaption>Once finished we endup with a clean map</figcaption>
+  </figure>
+</center>
 
-show i used service if not how would it look
+We have the map with correct probabilities in our map topic but if we don't save it we will have to reset from start again.
 
-Why i created my teleops command and demonstrated basic cmd_vel commands (with the delay on platform the supported teleops on turtlebot3 package wasn't suitable and making us miss spots)
+For that reason Ros has a tool called map saver, it saves the map to storage device to use it later. We save the map with following command
+
+`rosrun map_server map_saver -f name_of_map`
+
+Our map is saved under **maps/my_cafe**
+
+#### **Localizing**
+
+Second goal of the Task 2 is to localize the robot in the map. This wasn't a problem when we first recorded the map but when we launch our robot with the same configuration and a saved map, we have limited abilities to localize our robot's physical position related to the map. Or if we put the robot to **exact** same position where we first started to record the map everything would be alright since that isn't possible we need a localization system.
+
+Our first tool is estimating the pose using Rviz, based on our visualizations we can set an estimated physical pose of the robot however less precise.
+
+Our second tool is provided thanks to ROS which is called **AMCL** (Adaptive Monte Carlo Localization) it is using sensor data to estimate the pose of the robot. It creates arrows for the probable pose of the robot while doing that. This probable poses gets more precise when the robot moves. We can observe these behaviour by subscribing to the `/particlecloud` topic which will be published by amcl node.
+
 
 Pathfinding
 
@@ -228,3 +266,6 @@ http://wiki.ros.org/simulator_gazebo/Tutorials/SpawningObjectInSimulation
 - https://roboticsbackend.com/what-is-a-ros-service/
 - https://emanual.robotis.com/docs/en/platform/turtlebot3
 - https://emanual.robotis.com/docs/en/platform/turtlebot3/slam/
+- https://www.theconstructsim.com/robotigniteacademy_learnros/ros-courses-library/mastering-with-ros-turtlebot3/
+- Mastering ROS for Robotics Programming book
+- http://docs.ros.org/en/melodic/api/nav_msgs/html/msg/OccupancyGrid.html
