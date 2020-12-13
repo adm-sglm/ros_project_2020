@@ -22,9 +22,9 @@ class App:
         self.client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
         self.client.wait_for_server()
         self.amcl_sub = self.rospy.Subscriber("amcl_pose", PoseWithCovarianceStamped, self.cb_amcl_pose)
-        self.marker_pub = self.rospy.Publisher('visualization_marker_array', MarkerArray, queue_size=5)        
+        self.marker_pub = self.rospy.Publisher('visualization_marker_array', MarkerArray, queue_size=5)
 
-    def publish_markers(self, stop):        
+    def publish_markers(self, stop):
         while not stop():
             self.marker_pub.publish(self.markers)
             self.rate.sleep()
@@ -32,7 +32,7 @@ class App:
     def cb_amcl_pose(self, data):
         self.robot_pose = data
         self.amcl_sub.unregister()
-    
+
     def cb_point_clicked(self, data):
         point_msg = """
         Point added
@@ -42,7 +42,7 @@ class App:
 
         Press enter if you are done
         """
-        print(point_msg.format(x=data.point.x,y=data.point.y,z=data.point.z))        
+        print(point_msg.format(x=data.point.x,y=data.point.y,z=data.point.z))
         self.points.append(data.point)
 
     def mode_waypoint_create(self, stop):
@@ -54,8 +54,8 @@ class App:
         msg = '{count} waypoint(s) saved\n'
         self.create_markers()
         print(msg.format(count=len(self.points)))
-    
-    def create_markers(self):        
+
+    def create_markers(self):
         for i, wp in enumerate(self.points):
             marker = Marker(
                 id=i,
@@ -67,8 +67,8 @@ class App:
                 color=ColorRGBA(1.0, 0.0, 0.0, 1.0),
                 text=str(i+1)
                 )
-            self.markers.markers.append(marker)  
-    
+            self.markers.markers.append(marker)
+
     def basic_move(self):
         msg = Twist()
         msg.linear.x = 0.1
@@ -81,7 +81,7 @@ class App:
         pub.publish(msg)
         self.rospy.spin()
 
-    def start_patrolling(self, stop):        
+    def start_patrolling(self, stop):
         for wp in self.points:
             goal = MoveBaseGoal()
             pose = Pose()

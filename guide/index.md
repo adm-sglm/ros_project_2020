@@ -51,6 +51,12 @@ you can use tab auto completion
 
 In the global options **Fixed Frame** should be set to `base_scan` after adding **LaserScan** to visualize the laser scan readings.
 
+**To show the amcl particles**
+
+Add **PoseArray** to rviz.
+
+![](localization_start.png)
+
 ## Ros Packages
 
 ### Creating a package
@@ -76,6 +82,19 @@ Sourcing and refreshing them for the Ros system to locate
 ### Minimal rospy script
 
 ```py
+#! /usr/bin/env python
+
+import rospy
+
+rospy.init_node("adm")
+rate = rospy.Rate(2)
+
+while not rospy.is_shutdown():
+    print("tick")
+    rate.sleep()
+```
+
+```py
 import rospy
 from std_msgs.msg import Int32 
 
@@ -99,3 +118,22 @@ count.data = 1
 pub.publish(count)
 ```
 
+### Launch file
+
+Launch file for running a script from the package
+
+```xml
+<launch>
+    <!-- My Package launch file -->
+    <node pkg="my_package" type="simple.py" name="adm"  output="screen">
+    </node>
+</launch>
+```
+
+## Mapping
+
+### Saving the map
+
+```bash
+rosrun map_server map_saver -f name_of_map
+```
