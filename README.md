@@ -49,10 +49,10 @@ This level contains community additions to the project most important one is the
 Within the availability of concepts; we used several of them extensively. Here is the resources we used with explanations;
 
 #### **Master**
-is the bridge of the computational level it register [nodes](#node) and [services](#service), exchanges [messages](#message) between different nodes by tracking [subscribers](#subscribe) and [publishers](#publish).
+is the bridge of the computational level it register [nodes](#node) and [services](#service), exchanges [messages](#message) between different nodes by tracking subscribers and publishers. Generally run with the command `roscore`
 
 #### **Node**
-is a process unit generally built to occupe with one concern like navigation. Nodes register to master and using the [topics](#topic) and services they communicate between other nodes. Nodes have a unique name and they form a graph when combined.
+is a process unit generally built to occupe with one concern like navigation. Nodes register to master and using the [topics](#topic) and [services](#service) they communicate between other nodes. Nodes have a unique name and they form a graph when combined.
 
 <center>
   <figure>
@@ -60,6 +60,8 @@ is a process unit generally built to occupe with one concern like navigation. No
     <figcaption>A graph showing the nodes and their subscriptions.</figcaption>
   </figure>
 </center>
+
+We create nodes using a client-library like **rospy**, **roscpp**.
 
 #### **Topic**
 can be considered like a pipeline strictly connecting two endpoints, here endpoints are nodes. All the topic's are bound to a **message type** from [File System Level](#file-system-level).
@@ -71,34 +73,111 @@ can be considered like a pipeline strictly connecting two endpoints, here endpoi
   </figure>
 </center>
 
+In topic's case one node has to **publish** to a topic with a topic name and a message type in order for another node to be able to **subscribe** to it.
+
 #### **Message**
 
-Communication between nodes are done by transmitting messages through topics or services. Messages can be primitive or structural and their type should be defined in [File System Level](#file-system-level), in order for to be bound by topics and services.
+Communication between nodes are done by transmitting messages through topics or services. Messages can be primitive or structural and their type should be defined in [File System Level](#file-system-level), in order for to be bound by topics and services. Also since File System Level resources is storage based we can find their description files in our system.
+
+<a href="http://wiki.ros.org/rosmsg" target="_blank">`rosmsg`</a> is a great tool for learning the structure of a message.
 
 #### **Service**
 
+Services are a way of communication between nodes like topics difference comes from communication strategy. With publish/subscribe system requests to nodes are done with publishing to related topic; response to that request can only be observed through the side effects.
+
+<center>
+  <figure>
+    <img src="./report/assets/pubsubreq.svg">
+    <figcaption>A figure illustrating the request and side effect relation</figcaption>
+  </figure>
+</center>
+
+In this basic example if we want to know if the robot reached our target position; we need to track changes in side effects. Of course nodes generally publish to extra topics directly related to requests but this doesn't change the one-way behaviour between request and response.
+
+For this reason there is **services** in ROS which can establish a two way behaviour to our requests.
+
+<center>
+  <figure>
+    <img src="./report/assets/servicereq.svg">
+    <figcaption>A figure illustrating the request and response system on services</figcaption>
+  </figure>
+</center>
+
+It should also be noted that this workflow is syncronous so it blocks the client node until a response is recieved.
+
+
+## Implementation
+
+In this chapter we will explain what we used for each principle resource that we listed and explained in the previous chapter to achieve our tasks. After we are going to describe main application flow.
+
+As for environment; we are implementing our project using construct sim a web platform which embeds a code editor, gazebo simulation, graphical user interface (for accessing any extra graphic application) powered by a pre-configured ROS distribution behind. For each of its unit there are different packages installed and different configurations applied. For the unit that we are realising our project. It gives us a pre-installed ROS Kinetic distribution along with Turtlebot3 packages.
+
+**Initially** it start `roscore` and `gazebo` for us so when we look at the `rostopic list` output we observe that essential topics are there.
+
+```bash
+/clock
+/cmd_vel
+/gazebo/link_states
+/gazebo/model_states
+/gazebo/parameter_descriptions
+/gazebo/parameter_updates
+/gazebo/set_link_state
+/gazebo/set_model_state
+/imu
+/joint_states
+/odom
+/rosout
+/rosout_agg
+/scan
+/tf
+/tf_static
+```
+
+A cafeteria map is loaded through Gazebo yet to be discovered by us.
+
+
+### Task 1
+
+Task is: **Create a script that moves the robot around with simple /cmd_vel publishing. See the range of
+movement of this new robot model.**
+
+**cmd_vel** topic is an essential topic for publishing velocity commands; it accepts `Twist` messages which can be found under `geometry_msgs.msg` namespace.
+
+For this task we didn't launch any extra files since initial launch already subscribes to `/cmd_vel` topic. We tried publishing directly from our node and observing by echoing from command line.
+
+```py
+msg = Twist()
+msg.linear.x = 0.1
+```
+
+Message to publish only contains a linear movement on x direction.
+
+From `rostopic echo /cmd_vel` we observed following.
+
+```bash
+linear:
+  x: 0.1
+  y: 0.0
+  z: 0.0
+angular:
+  x: 0.0
+  y: 0.0
+  z: 0.0
+```
+
+With this methods our abilities to control the robot is very limited.
+
+### Task 2
+
+Task is: **Create the mapping launches, and map the whole environment. You have to finish with a clean map of
+the full cafeteria. Setup the launch to be able to localize the Turtlebot3 robot.**
+
+We set us a base by creating a launch file named `start_mapping.launch` in our project's launch folder.
+
+This launch file starts the node **turtlebot3_slam_gmapping** provided within Turtlebot3 packages also sets some configuration for this node to work properly. Loads the robot model using urdf models
 
 
 
-
-Sometimes a graphic worths a thousand words:
-
-A node registered to Master
-
-The node subscribes a topic with a message type
-
-Another node registers
-
-Publishes to that topic
-
-Emphasize many to many (
-  a node gets a message through a topic that it subscribed
-  a side effect occurs and maybe it publishes that in another topic but not in a request response fashion
-)
-
-Show service
-
-Request and response
 
 in Implementation
 
@@ -144,3 +223,8 @@ http://wiki.ros.org/simulator_gazebo/Tutorials/SpawningObjectInSimulation
 
 - http://wiki.ros.org/ROS/Introduction
 - http://wiki.ros.org/ROS/Concepts
+- http://wiki.ros.org/rospy
+- http://wiki.ros.org/roscpp
+- https://roboticsbackend.com/what-is-a-ros-service/
+- https://emanual.robotis.com/docs/en/platform/turtlebot3
+- https://emanual.robotis.com/docs/en/platform/turtlebot3/slam/
