@@ -46,9 +46,40 @@ This level contains community additions to the project most important one is the
 
 ## Technical Analysis
 
-Within the availability of concepts; we used several of them extensively. Here is the resources we used with the technical details;
+Within the availability of concepts; we used several of them extensively. Here is the resources we used with explanations;
 
-**Master** is the bridge of the computational level it register nodes, exchanges messages between different nodes,
+#### **Master**
+is the bridge of the computational level it register [nodes](#node) and [services](#service), exchanges [messages](#message) between different nodes by tracking [subscribers](#subscribe) and [publishers](#publish).
+
+#### **Node**
+is a process unit generally built to occupe with one concern like navigation. Nodes register to master and using the [topics](#topic) and services they communicate between other nodes. Nodes have a unique name and they form a graph when combined.
+
+<center>
+  <figure>
+    <img src="./report/assets/rosgraph.svg">
+    <figcaption>A graph showing the nodes and their subscriptions.</figcaption>
+  </figure>
+</center>
+
+#### **Topic**
+can be considered like a pipeline strictly connecting two endpoints, here endpoints are nodes. All the topic's are bound to a **message type** from [File System Level](#file-system-level).
+
+<center>
+  <figure>
+    <img src="./report/assets/topic.png">
+    <figcaption>A graph showing how topics connect nodes</figcaption>
+  </figure>
+</center>
+
+#### **Message**
+
+Communication between nodes are done by transmitting messages through topics or services. Messages can be primitive or structural and their type should be defined in [File System Level](#file-system-level), in order for to be bound by topics and services.
+
+#### **Service**
+
+
+
+
 
 Sometimes a graphic worths a thousand words:
 
@@ -71,9 +102,17 @@ Request and response
 
 in Implementation
 
+Launch file / Initializing master
+
+basically a master is initialized by launching `roscore` but here we dont directly run it but let it run by a launch file provided by turtlebot3 package which also sets up some parameters
+
 show i used service if not how would it look
 
 Why i created my teleops command and demonstrated basic cmd_vel commands (with the delay on platform the supported teleops on turtlebot3 package wasn't suitable and making us miss spots)
+
+Pathfinding
+
+Show it actively working by placing an obstacle and emphasize the dynamic map and static map file OccupancyGrid.
 
 
 ## Launching the project
